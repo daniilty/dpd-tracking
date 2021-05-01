@@ -20,6 +20,7 @@ class Info
   def initialize(tn, url)
     if tn.nil?
       puts "Please gimme your track number"
+
       return
     end
 
