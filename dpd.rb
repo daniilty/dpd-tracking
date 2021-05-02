@@ -15,44 +15,53 @@ def pretty_gets(decor = '> ')
 end
 
 class Info
-  attr_accessor :page
-  
-  def initialize(tn, url)
-    if tn.nil?
-      puts "Please gimme your track number"
+  attr_accessor :pages, :track_numbers
+
+  def initialize(tns, url)
+    if tns.length.zero?
+      puts "Please provide me tracking numbers"
 
       return
     end
+    
+    @track_numbers = tns
 
-    doc = RestClient.post(url, { orderNum: tn, orderId: '' })
+    @pages = []
+    @track_numbers.each do |tn|
+      doc = RestClient.post(url, { orderNum: tn, orderId: '' })
 
-    @page = Nokogiri::HTML(doc)
+      @pages.push(Nokogiri::HTML(doc))
+    end
   end
   
   def print_track_history
-    track_history_entries = @page.xpath("//table[@id='trackHistory']/tr") 
+    @pages.each_with_index do |page, i|
+      puts "#{@track_numbers[i]}:"
 
-    if track_history_entries.length.zero?
-      puts 'Nothing has been found by your tracking number'
+      track_history_entries = page.xpath("//table[@id='trackHistory']/tr") 
 
-      return
-    end
+      if track_history_entries.length.zero?
+        puts 'Nothing has been found by your tracking number'
 
-    track_history_entries.each do |el|
-      puts el.text.gsub("\r", '').split("\n")[1..-2].join(": ")
+        return
+      end
+
+      track_history_entries.each do |el|
+        puts el.text.gsub("\r", '').split("\n")[1..-2].join(": ")
+      end
     end
   end
 end
 
-inf = []
+tns = []
 
 cfg = load_config('config.json')
-if cfg["url"].nil? || cfg["tracking_number"].nil?
-  inf = pretty_gets('Enter the tracking number and url, separated by comma: ').gsub("\n", '').split(',')
+if cfg["tracking_numbers"].length.zero?
+  tns = pretty_gets('Enter the tracking numbers, separated by comma: ').gsub("\n", '').split(',')
 else
-  inf.push(cfg["tracking_number"], cfg["url"])
+  tns = cfg["tracking_numbers"]
 end
 
-inst = Info.new(inf[0], inf[1])
+inst = Info.new(tns, cfg["url"])
 
 inst.print_track_history
