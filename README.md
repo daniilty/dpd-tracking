@@ -12,7 +12,10 @@ $ [vim,nano,etc...] config.json
 ```json
 {
   "url": "https://www.dpd.ru/ols/trace2/standard.do2?method:search=",
-  "tracking_number": "RU12345..."
+  "tracking_numbers": [
+    "RU12345...",
+    "RU67890..."
+  ]
 }
 ```
 
