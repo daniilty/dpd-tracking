@@ -39,7 +39,7 @@ class Info
     end
 
     track_history_entries.each do |el|
-      puts el.text
+      puts el.text.gsub("\r", '').split("\n")[1..-2].join(": ")
     end
   end
 end
