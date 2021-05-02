@@ -43,7 +43,7 @@ class Info
       if track_history_entries.length.zero?
         puts 'Nothing has been found by your tracking number'
 
-        return
+        next
       end
 
       track_history_entries.each do |el|
